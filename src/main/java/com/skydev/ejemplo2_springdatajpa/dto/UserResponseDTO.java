@@ -1,6 +1,6 @@
 package com.skydev.ejemplo2_springdatajpa.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class UserResponseDTO {
     private Long id;
     private String name;
     private String lastName;
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
     private String email;
 
 }

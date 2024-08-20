@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.skydev.ejemplo2_springdatajpa.exception.ErrorResponse;
+import com.skydev.ejemplo2_springdatajpa.exception.custom.EntityNotFoundException;
 import com.skydev.ejemplo2_springdatajpa.exception.custom.ValidationException;
 
 @ControllerAdvice
@@ -22,5 +23,15 @@ public class GlobalExceptionHandler {
                                                                 .errorDetails(ve.getErrorDetails())
                                                                 .build());
     }   
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerEntityNotFoundException(EntityNotFoundException enfe){
+        return ResponseEntity.badRequest().body(ErrorResponse.builder()
+                                                                .menssage(enfe.getMessage())
+                                                                .statusCode(HttpStatus.BAD_REQUEST.value())
+                                                                .timestamp(LocalDateTime.now())
+                                                                .errorDetails(enfe.getErrorDetails())
+                                                                .build());
+    }
 
 }

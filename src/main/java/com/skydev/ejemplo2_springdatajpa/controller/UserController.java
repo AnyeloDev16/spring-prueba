@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.skydev.ejemplo2_springdatajpa.dto.UserRequestDTO;
 import com.skydev.ejemplo2_springdatajpa.dto.UserResponseDTO;
 import com.skydev.ejemplo2_springdatajpa.exception.custom.ValidationException;
+import com.skydev.ejemplo2_springdatajpa.service.IEmailService;
 import com.skydev.ejemplo2_springdatajpa.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserController {
 
     private final IUserService userService;
+    private final IEmailService emailService;
 
     @GetMapping("/findAll")
     public ResponseEntity<List<UserResponseDTO>> findAllUsers() {
@@ -40,14 +42,16 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> saveUser(@RequestBody UserRequestDTO userRequestDTO) {
         log.info(userRequestDTO.toString());
         verifyData(userRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userRequestDTO));
+        UserResponseDTO user = userService.saveUser(userRequestDTO);
+        emailService.sendEmailRegisterSuccessful(user.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id ,@RequestBody UserRequestDTO userRequestDTO) {
         verifyId(id);
         verifyData(userRequestDTO);
-        return ResponseEntity.ok(userService.saveUser(userRequestDTO));
+        return ResponseEntity.ok(userService.updateUser(id, userRequestDTO));
     }
     
     @DeleteMapping("/delete/{id}")

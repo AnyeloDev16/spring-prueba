@@ -1,6 +1,6 @@
 package com.skydev.ejemplo2_springdatajpa.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,8 +28,8 @@ public class User {
     private String name;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "birth_date", columnDefinition = "DATETIME")
-    private LocalDateTime birthDate;
+    @Column(name = "birth_date", columnDefinition = "DATE")
+    private LocalDate birthDate;
     private String email;
 
 }

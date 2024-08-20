@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.skydev.ejemplo2_springdatajpa.dto.UserRequestDTO;
 import com.skydev.ejemplo2_springdatajpa.dto.UserResponseDTO;
 import com.skydev.ejemplo2_springdatajpa.entity.User;
+import com.skydev.ejemplo2_springdatajpa.exception.custom.EntityNotFoundException;
 import com.skydev.ejemplo2_springdatajpa.repository.IUserRepository;
 import com.skydev.ejemplo2_springdatajpa.service.IUserService;
 
@@ -43,7 +44,7 @@ public class UserServiceImpl implements IUserService{
     public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO) {
         boolean isExists = userRepository.existsById(id);
         if(!isExists){
-            return null;
+            throw new EntityNotFoundException("Search error", List.of("User id not found : "+ id));
         }
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setId(id);
@@ -57,7 +58,7 @@ public class UserServiceImpl implements IUserService{
     public void deleteUser(Long id) {
         boolean isExists = userRepository.existsById(id);
         if(!isExists){
-            return;
+            throw new EntityNotFoundException("Search error", List.of("User id not found : "+ id));
         }
         userRepository.deleteById(id);
     }
