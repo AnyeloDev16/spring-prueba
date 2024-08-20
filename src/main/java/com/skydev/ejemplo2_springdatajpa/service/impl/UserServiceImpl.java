@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements IUserService{
 
     private final IUserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
     @Transactional

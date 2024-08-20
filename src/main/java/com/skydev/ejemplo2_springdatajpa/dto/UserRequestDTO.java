@@ -14,7 +14,7 @@ import lombok.Setter;
 public class UserRequestDTO {
 
     private String name;
-    private String lastname;
+    private String lastName;
     private LocalDateTime birthDate;
     private String email;
 

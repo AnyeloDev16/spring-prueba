@@ -12,9 +12,9 @@ import com.skydev.ejemplo2_springdatajpa.exception.custom.ValidationException;
 import com.skydev.ejemplo2_springdatajpa.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -37,29 +38,33 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserResponseDTO> saveUser(@RequestBody UserRequestDTO userRequestDTO) {
+        log.info(userRequestDTO.toString());
         verifyData(userRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userRequestDTO));
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id ,@RequestBody UserRequestDTO userRequestDTO) {
+        verifyId(id);
         verifyData(userRequestDTO);
         return ResponseEntity.ok(userService.saveUser(userRequestDTO));
     }
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
-        return null;
+        verifyId(id);
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     private void verifyData(UserRequestDTO userRequestDTO) {
       
-        List<String> errorDetails = new ArrayList();
+        List<String> errorDetails = new ArrayList<>();
 
         if(userRequestDTO.getName() == null || userRequestDTO.getName().isBlank()){
             errorDetails.add("Name is empty");
         }
-        if(userRequestDTO.getName() == null || userRequestDTO.getLastname().isBlank()){
+        if(userRequestDTO.getLastName() == null || userRequestDTO.getLastName().isBlank()){
             errorDetails.add("Lastname is empty");
         }
         if(userRequestDTO.getBirthDate() == null){
@@ -68,7 +73,7 @@ public class UserController {
         if(userRequestDTO.getEmail() == null || userRequestDTO.getEmail().isBlank()){
             errorDetails.add("Email is empty");
         } else if (!userRequestDTO.getEmail().contains("@")){
-            errorDetails.add("Email is missing the /'@/'");
+            errorDetails.add("Email is missing the \'@\'");
         }
 
         if(!errorDetails.isEmpty()){

@@ -27,7 +27,7 @@ public class User {
     private Long id;
     private String name;
     @Column(name = "last_name")
-    private String lastname;
+    private String lastName;
     @Column(name = "birth_date", columnDefinition = "DATETIME")
     private LocalDateTime birthDate;
     private String email;
