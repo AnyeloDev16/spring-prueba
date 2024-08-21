@@ -40,24 +40,25 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserResponseDTO> saveUser(@RequestBody UserRequestDTO userRequestDTO) {
-        log.info(userRequestDTO.toString());
         verifyData(userRequestDTO);
-        UserResponseDTO user = userService.saveUser(userRequestDTO);
-        emailService.sendEmailRegisterSuccessful(user.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        UserResponseDTO userResDTO = userService.saveUser(userRequestDTO);
+        emailService.sendEmailRegisterSuccessful(userResDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResDTO);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id ,@RequestBody UserRequestDTO userRequestDTO) {
         verifyId(id);
         verifyData(userRequestDTO);
-        return ResponseEntity.ok(userService.updateUser(id, userRequestDTO));
+        List<UserResponseDTO> list = userService.updateUser(id, userRequestDTO);
+        return ResponseEntity.ok(list.get(0));
     }
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         verifyId(id);
-        userService.deleteUser(id);
+        UserResponseDTO userResDTO = userService.deleteUser(id);
+        emailService.sendEmailDeleteSuccessful(userResDTO.getEmail());
         return ResponseEntity.noContent().build();
     }
 

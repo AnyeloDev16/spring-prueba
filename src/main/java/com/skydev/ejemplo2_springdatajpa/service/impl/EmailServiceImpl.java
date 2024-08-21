@@ -30,5 +30,19 @@ public class EmailServiceImpl implements IEmailService{
         javaMailSender.send(smm);
 
     }
+    
+    @Override
+    public void sendEmailDeleteSuccessful(String emailUser) {
+        
+        SimpleMailMessage smm = new SimpleMailMessage();
+
+        smm.setFrom(emailUserSender);
+        smm.setTo(emailUser);
+        smm.setSubject("CUENTA ELIMINADA");
+        smm.setText("Su cuenta fue eliminada con exito, esperamos volverlo a verlo en un futuro.");
+
+        javaMailSender.send(smm);
+
+    }
 
 }

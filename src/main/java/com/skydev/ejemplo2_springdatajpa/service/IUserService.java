@@ -9,7 +9,7 @@ public interface IUserService {
     
     List<UserResponseDTO> findAllUsers();
     UserResponseDTO saveUser(UserRequestDTO UserRequestDTO);
-    UserResponseDTO updateUser(Long id, UserRequestDTO UserRequestDTO);
-    void deleteUser(Long id);
+    List<UserResponseDTO> updateUser(Long id, UserRequestDTO UserRequestDTO);
+    UserResponseDTO deleteUser(Long id);
 
 }

@@ -1,6 +1,9 @@
 package com.skydev.ejemplo2_springdatajpa.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -13,14 +16,21 @@ import com.skydev.ejemplo2_springdatajpa.exception.custom.EntityNotFoundExceptio
 import com.skydev.ejemplo2_springdatajpa.repository.IUserRepository;
 import com.skydev.ejemplo2_springdatajpa.service.IUserService;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService{
 
     private final IUserRepository userRepository;
     private final ModelMapper modelMapper = new ModelMapper();
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     @Transactional
@@ -41,26 +51,38 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     @Transactional
-    public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO) {
-        boolean isExists = userRepository.existsById(id);
-        if(!isExists){
+    public List<UserResponseDTO> updateUser(Long id, UserRequestDTO userRequestDTO) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isEmpty()){
             throw new EntityNotFoundException("Search error", List.of("User id not found : "+ id));
         }
+        // Previous
+        User previousUser = optionalUser.get();
+        UserResponseDTO previousUserDTO = modelMapper.map(previousUser, UserResponseDTO.class);
+        // New
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setId(id);
         userRepository.save(user);
-        return modelMapper.map(user, UserResponseDTO.class);
+        UserResponseDTO newUserDTO = modelMapper.map(user, UserResponseDTO.class);
+        
+        return new ArrayList<UserResponseDTO>(Arrays.asList(newUserDTO, previousUserDTO));
 
     }
 
     @Override
     @Transactional
-    public void deleteUser(Long id) {
-        boolean isExists = userRepository.existsById(id);
-        if(!isExists){
+    public UserResponseDTO deleteUser(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isEmpty()){
             throw new EntityNotFoundException("Search error", List.of("User id not found : "+ id));
         }
+        //previous
+        User previousUser = optionalUser.get();
+        UserResponseDTO previousUserDTO = modelMapper.map(previousUser, UserResponseDTO.class);
+        // Delete
         userRepository.deleteById(id);
+        return previousUserDTO;
+
     }
 
 }
