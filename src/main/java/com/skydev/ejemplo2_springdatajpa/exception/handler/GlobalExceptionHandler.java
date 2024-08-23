@@ -59,4 +59,6 @@ public class GlobalExceptionHandler {
                                                                 .build());
     }
 
+    // PropertyReferenceException
+
 }

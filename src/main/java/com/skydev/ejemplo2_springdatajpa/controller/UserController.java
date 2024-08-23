@@ -1,22 +1,23 @@
 package com.skydev.ejemplo2_springdatajpa.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.skydev.ejemplo2_springdatajpa.dto.UserRequestDTO;
 import com.skydev.ejemplo2_springdatajpa.dto.UserResponseDTO;
-import com.skydev.ejemplo2_springdatajpa.exception.custom.IdValidationException;
 import com.skydev.ejemplo2_springdatajpa.service.IEmailService;
 import com.skydev.ejemplo2_springdatajpa.service.IUserService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +43,11 @@ public class UserController {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
+    @GetMapping("/findAllPage")
+    public ResponseEntity<Page<UserResponseDTO>> findAllUsersPag(@RequestParam(defaultValue = "0") @Min(value = 0, message = "Invalid page number (min 0)") int pageNumber, @RequestParam(defaultValue = "10") @Min(value = 1, message = "Invalid page size (min 1)") int pageSize, @RequestParam(defaultValue = "id") String orderBy) {
+        return ResponseEntity.ok(userService.findAllUsersPag(pageNumber, pageSize, orderBy));
+    }
+
     @PostMapping("/save")
     public ResponseEntity<UserResponseDTO> saveUser(@RequestBody @Valid UserRequestDTO userRequestDTO) {
         UserResponseDTO userResDTO = userService.saveUser(userRequestDTO);
@@ -51,8 +57,7 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable @Positive(message = "Invalid ID") Long id ,@RequestBody @Valid UserRequestDTO userRequestDTO) {
-        List<UserResponseDTO> list = userService.updateUser(id, userRequestDTO);
-        return ResponseEntity.ok(list.get(0));
+        return ResponseEntity.ok(userService.updateUser(id, userRequestDTO));
     }
     
     @DeleteMapping("/delete/{id}")

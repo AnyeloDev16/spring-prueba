@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +37,20 @@ public class UserServiceImpl implements IUserService{
     private EntityManager entityManager;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll()
                                 .stream()
                                 .map(userEntity -> modelMapper.map(userEntity, UserResponseDTO.class))
                                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserResponseDTO> findAllUsersPag(int pageNumber, int pageSize, String orderBy){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderBy));
+        Page<User> pageUser = userRepository.findAll(pageable);
+        return pageUser.map(user -> modelMapper.map(user, UserResponseDTO.class));
     }
 
     @Override
@@ -51,22 +63,16 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     @Transactional
-    public List<UserResponseDTO> updateUser(Long id, UserRequestDTO userRequestDTO) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if(optionalUser.isEmpty()){
+    public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO) {
+        boolean isExists = userRepository.existsById(id);
+        if(!isExists){
             throw new EntityNotFoundException("Search error", List.of("User id not found : "+ id));
         }
-        // Previous
-        User previousUser = optionalUser.get();
-        UserResponseDTO previousUserDTO = modelMapper.map(previousUser, UserResponseDTO.class);
         // New
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setId(id);
         userRepository.save(user);
-        UserResponseDTO newUserDTO = modelMapper.map(user, UserResponseDTO.class);
-        
-        return new ArrayList<UserResponseDTO>(Arrays.asList(newUserDTO, previousUserDTO));
-
+        return  modelMapper.map(user, UserResponseDTO.class);
     }
 
     @Override
