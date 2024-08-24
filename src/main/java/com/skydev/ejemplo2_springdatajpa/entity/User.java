@@ -2,6 +2,8 @@ package com.skydev.ejemplo2_springdatajpa.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.envers.Audited;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
+@Audited
 public class User {
 
     @Id
