@@ -35,4 +35,11 @@ public class User {
     private LocalDate birthDate;
     private String email;
 
+    public User(String name, String lastName, LocalDate birthDate, String email) {
+        this.name = name;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.email = email;
+    }
+
 }

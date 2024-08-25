@@ -55,8 +55,7 @@ public class UserServiceImpl implements IUserService{
     @Transactional
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
         User user = modelMapper.map(userRequestDTO, User.class);
-        userRepository.save(user);
-        return modelMapper.map(user, UserResponseDTO.class);
+        return modelMapper.map(userRepository.save(user), UserResponseDTO.class);
     }
 
     @Override
